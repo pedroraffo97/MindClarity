@@ -5,20 +5,28 @@
 //  Created by Pedro Raffo Leon on 05.01.24.
 //
 
+import Foundation
+
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var authManager = AuthManager.shared
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if authManager.isUserAuthenticated() {
+                    MenuView()
+                }
+            else {
+                    UserSignIn()
+                }
+            }
         }
-        .padding()
+    }
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
     }
 }
 
-#Preview {
-    ContentView()
-}
