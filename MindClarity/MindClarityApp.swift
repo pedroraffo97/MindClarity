@@ -35,6 +35,7 @@ struct MindClarityApp: App {
     @StateObject var Stoicdata = PhrasesLibrary()
     @StateObject var Userdata = UserLibrary()
     @StateObject var Calendardata = CalendarEvents()
+    @StateObject var UserSelection = userSelection()
     
     
     
@@ -54,6 +55,7 @@ struct MindClarityApp: App {
             .environmentObject(Stoicdata)
             .environmentObject(Userdata)
             .environmentObject(Calendardata)
+            .environmentObject(UserSelection)
             //when app launches, load all the saved arrays from the classes stored in the fileManager and in the Cloud Firestore
             .onAppear {
                     REBTdata.loadREBDatainFirestore()
@@ -63,6 +65,7 @@ struct MindClarityApp: App {
                     Userdata.loadUserDatainFirestore()
                     Calendardata.loadEventsfromFirestore()
                     Prouddata.loadProudDatafromFirestore()
+                    UserSelection.loadPreferencesinFirestore()
                     }
             }
         //when updating the userID it will update the Firestore data for that current User
@@ -75,6 +78,7 @@ struct MindClarityApp: App {
             Prouddata.loadProudDatafromFirestore()
             ProgressTrackingdata.loadHabitsfromFirestore()
             Calendardata.loadEventsfromFirestore()
+            UserSelection.loadPreferencesinFirestore()
         }
         //when adding a new session in the REBT active Sessions array it will add it in the Firestore collection
         .onChange(of: REBTdata.activeSessions){_ in
@@ -124,9 +128,18 @@ struct MindClarityApp: App {
         .onChange(of: Calendardata.CurrentEvents) {_ in
             
             for events in Calendardata.CurrentEvents {
-                Calendardata.addEventtoFirestore()
+                Calendardata.addEventtoFirestore(event: events)
+            }
+            
+        }
+        
+        .onChange(of: UserSelection.preferredDesign) {_ in
+            
+            for design in UserSelection.preferredDesign {
+                UserSelection.savePreferencesinFirestore()
             }
             
         }
     }
 }
+
