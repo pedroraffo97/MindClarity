@@ -7,57 +7,102 @@
 
 import Foundation
 
-import OpenAISwift
-
 import SwiftUI
 
-//here we are going to include and adapt all the API for ChatGPT
+
+struct ChatMessage {
+    let id: String
+    let content: String
+    let dateCreated: Date
+    let sender: MessageSender
+}
+
+enum MessageSender {
+    case me
+    case gpt
+}
+
+extension ChatMessage {
+    static let sampleMessages = [
+        ChatMessage(id: UUID().uuidString, content: "Sample message from me", dateCreated: Date(), sender: .me),
+        ChatMessage(id: UUID().uuidString, content: "Sample message from gpt", dateCreated: Date(), sender: .gpt),
+        ChatMessage(id: UUID().uuidString, content: "Sample message from me", dateCreated: Date(), sender: .me),
+        ChatMessage(id: UUID().uuidString, content: "Sample message from gpt", dateCreated: Date(), sender: .gpt)
+    ]
+}
+
 struct TherapyAssistant: View {
-    @State private var inputText = ""
-    @State private var outputText = ""
+    @State var chatMessages: [ChatMessage] = ChatMessage.sampleMessages
+    @State var messageText: String = ""
     
-    
-    private let openAI = OpenAISwift(config: OpenAISwift.Config.makeDefaultOpenAI(apiKey:""))
+    func messageView(message: ChatMessage) -> some View {
+        
+        HStack {
+            
+            if message.sender == .me {
+                Spacer()
+            }
+            
+            Text(message.content)
+                .foregroundColor(message.sender == .me ? .white : .black)
+                .padding()
+                .background(message.sender == .me ? .black : .gray.opacity(0.1))
+                .cornerRadius(16)
+            
+            if message.sender == .gpt {
+                Spacer()
+            }
+            
+        }
+    }
     
     func sendMessage() {
-        openAI.sendCompletion(with: inputText) {result in
-            switch result {
-            case .success(let success):
-                if let firstChoice = success.choices {
-                    outputText = firstChoice.first?.text ?? "No response received from the API."
-                            } else {
-                                outputText = "No response received from the API."
-                            }
-            case .failure(let failure):
-                print("Error: \(failure)")
-            }
-        }
+        messageText = ""
+        print(messageText)
     }
     
     var body: some View {
         VStack {
-            
-            TextField("Ask your AI Therapy Assistant", text: $inputText)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
-            Button {
-                sendMessage()
-            } label: {
-                Text("Send")
+            ScrollView {
+                LazyVStack {
+                    ForEach(chatMessages, id: \.id) { message in
+                        messageView(message: message)
+                    }
+                }
             }
-            .font(.headline)
-            .buttonStyle(.bordered)
-            .background(Color.black)
-            .foregroundColor(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            
-            Text("AI Therapist response")
+            HStack {
+                TextField("Write something to the AI Therapist", text: $messageText)
+                    .padding()
+                    .background(.gray.opacity(0.1))
+                    .cornerRadius(10)
+                Button {
+                    sendMessage()
+                } label: {
+                    Text("Send")
+                }
                 .font(.headline)
-                .padding()
-            Text(outputText)
-                .padding()
+                .buttonStyle(.bordered)
+                .background(Color.black)
+                .foregroundColor(.white)
+                .cornerRadius (10)
+                
+            }
             
         }
+        .padding()
     }
+}
+
+
+
+
+
+
+
+
+
+
+
+#Preview {
+    TherapyAssistant()
 }
