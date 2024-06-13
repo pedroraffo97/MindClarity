@@ -15,7 +15,7 @@ struct GratitudeJournalView:View {
     @EnvironmentObject var ProgressTrackingdata: ProgressTrackingClass
     @State var localGratitudeData: GratitudeNote = GratitudeNote(date: "")
     @State var localgratefulListPoint: String = ""
-    @State var Gratefulhabit: habit = habit(name: "", done: "", date: "")
+    @State var Gratefulhabit: habit = habit(name: "", done: "", date: Date())
     
     private var todaysDate: String {
         let dateFormatter = DateFormatter()
@@ -25,13 +25,10 @@ struct GratitudeJournalView:View {
     
     func addGratefulNotes() {
         let habitname = "Grateful Notes"
-        let habitdate = todaysDate
         let habitdone = "🤲"
         Gratefulhabit.name.append(habitname)
-        Gratefulhabit.date.append(habitdate)
         Gratefulhabit.done.append(habitdone)
         ProgressTrackingdata.trackedHabits.append(Gratefulhabit)
-        
     }
     
     
