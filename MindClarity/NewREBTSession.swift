@@ -11,7 +11,7 @@ import SwiftUI
 
 struct NewREBTSession: View {
     @State var new_REBT_session: Session = Session(activatingEvent: "", belief: "", disputation: "", consequences: "", effective: "")
-    @State var REBThabit: habit = habit(name: "", done: "", date: "")
+    @State var REBThabit: habit = habit(name: "", done: "", date: Date())
     @EnvironmentObject var REBTdata:  REBTLibrary
     @EnvironmentObject var ProgressTrackingdata: ProgressTrackingClass
     @Environment(\.dismiss) var dismiss
@@ -24,7 +24,7 @@ struct NewREBTSession: View {
     
     func addREBT() {
         let habitname = "REBT"
-        let habitdate = todaysDate
+        let habitdate = Date()
         let habitdone = "📝"
         REBThabit.name = habitname
         REBThabit.date = habitdate
@@ -170,3 +170,4 @@ struct NewREBTSession: View {
             .background(chosenWallpaper())
         }
     }
+
