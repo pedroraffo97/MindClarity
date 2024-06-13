@@ -12,7 +12,7 @@ import SwiftUI
 struct MeditationHubView: View {
     @EnvironmentObject var Meditationdata: MeditationContent
     @EnvironmentObject var ProgressTrackingdata: ProgressTrackingClass
-    @State var Meditationhabit: habit = habit(name: "", done: "", date: "")
+    @State var Meditationhabit: habit = habit(name: "", done: "", date: Date())
     
     private var todaysDate: String {
         let dateFormatter = DateFormatter()
@@ -22,10 +22,8 @@ struct MeditationHubView: View {
     
     func addMeditation() {
         let habitname = "Meditation"
-        let habitdate = todaysDate
         let habitdone = "🧘‍♂️"
         Meditationhabit.name = habitname
-        Meditationhabit.date = habitdate
         Meditationhabit.done = habitdone
         ProgressTrackingdata.trackedHabits.append(Meditationhabit)
     }
