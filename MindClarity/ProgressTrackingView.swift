@@ -9,22 +9,48 @@ import Foundation
 
 import SwiftUI
 
+
+struct HabitView: View {
+    @EnvironmentObject var ProgressTrackingdata: ProgressTrackingClass
+    let habitUnit: habit
+    
+    var body: some View {
+        VStack{
+                HStack{
+                    Text(habitUnit.done)
+                    Text(habitUnit.name)
+                    
+                    Button {
+                        if let index = ProgressTrackingdata.trackedHabits.firstIndex(where: {$0.id == habitUnit.id}) {
+                            ProgressTrackingdata.trackedHabits.remove(at: index)
+                            ProgressTrackingdata.deleteHabitsfromFirestore(habit: habitUnit)}
+                    } label: {
+                        Image(systemName: "trash")}
+                    .foregroundColor(.red)
+                }
+        }
+        .padding()
+    }
+}
+
 struct ProgressTrackingView: View {
     @EnvironmentObject var ProgressTrackingdata: ProgressTrackingClass
-    @State var REBThabit: habit = habit(name: "", done: "", date: "")
-    @State var Meditationhabit: habit = habit(name: "", done: "", date: "")
-    @State var Journalhabit: habit = habit(name: "", done: "", date: "")
-    @State var Gratefulhabit: habit = habit(name: "", done: "", date: "")
+    @State var REBThabit: habit = habit(name: "", done: "", date: Date())
+    @State var Meditationhabit: habit = habit(name: "", done: "", date: Date())
+    @State var Journalhabit: habit = habit(name: "", done: "", date: Date())
+    @State var Gratefulhabit: habit = habit(name: "", done: "", date: Date())
     
-    private var todaysDate: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        return dateFormatter.string(from: Date())
-    }
+    @State var selectedHabitDate: Date = {
+        let calendar = Calendar.current
+        let currentDate = Date()
+        let components = calendar.dateComponents([.year, .month, .day], from: currentDate)
+        return calendar.date(from: components) ?? currentDate
+    }()
+
     
     func addREBT() {
         let habitname = "REBT"
-        let habitdate = todaysDate
+        let habitdate = Date()
         let habitdone = "📝"
         REBThabit.name = habitname
         REBThabit.date = habitdate
@@ -35,7 +61,7 @@ struct ProgressTrackingView: View {
     
     func addMeditation() {
         let habitname = "Meditation"
-        let habitdate = todaysDate
+        let habitdate = Date()
         let habitdone = "🧘‍♂️"
         Meditationhabit.name = habitname
         Meditationhabit.date = habitdate
@@ -45,26 +71,26 @@ struct ProgressTrackingView: View {
     
     func addJournal() {
         let habitname = "Journal"
-        let habitdate = todaysDate
+        let habitdate = Date()
         let habitdone = "📓"
-        Journalhabit.name.append(habitname)
-        Journalhabit.date.append(habitdate)
-        Journalhabit.done.append(habitdone)
+        Journalhabit.name = habitname
+        Journalhabit.date = habitdate
+        Journalhabit.done = habitdone
         ProgressTrackingdata.trackedHabits.append(Journalhabit)
     }
     
     func addGratefulNotes() {
         let habitname = "Grateful Notes"
-        let habitdate = todaysDate
+        let habitdate = Date()
         let habitdone = "🤲"
-        Gratefulhabit.name.append(habitname)
-        Gratefulhabit.date.append(habitdate)
-        Gratefulhabit.done.append(habitdone)
+        Gratefulhabit.name = habitname
+        Journalhabit.date = habitdate
+        Gratefulhabit.done = habitdone
         ProgressTrackingdata.trackedHabits.append(Gratefulhabit)
         
     }
     
-    
+
     
     var body: some View {
         VStack{
@@ -82,35 +108,16 @@ struct ProgressTrackingView: View {
                 .frame(height: 5)
             ScrollView{
                 VStack{
-                    ZStack{
-                        VStack{
-                            ForEach(ProgressTrackingdata.trackedHabits.indices, id: \.self) {
-                                index in 
-                                
-                                let habit = ProgressTrackingdata.trackedHabits[index]
-                                
-                                ZStack{
-                                    Rectangle()
-                                        .scaledToFit()
-                                        .frame(width: 300, height: 50)
-                                        .colorInvert()
-                                        .border(Color.black)
-                                    HStack{
-                                        Text(habit.done)
-                                        Text(habit.date + ":")
-                                        Text(habit.name)
-                                        Button{
-                                            ProgressTrackingdata.trackedHabits.remove(at: index)
-                                            ProgressTrackingdata.deleteHabitsfromFirestore(habit: habit)
-                                        } label: {
-                                            Image(systemName: "trash")
-                                        }
-                                        .foregroundColor(.red)
-                                    }
-                                }
+                        VStack {
+                            ForEach(ProgressTrackingdata.trackedHabits.filter{$0.date.isSameDay(as: selectedHabitDate)}){
+                                index in
+                                HabitView(habitUnit: index)
                             }
                         }
-                    }
+                        VStack {
+                            DatePicker("", selection: $selectedHabitDate, displayedComponents: .date)
+                                .datePickerStyle(.graphical)
+                        }
                 }
             }
             Rectangle()
@@ -171,6 +178,8 @@ struct ProgressTrackingView: View {
             }
             Rectangle()
             .frame(height: 1)
+            
+            
         }
     }
 
