@@ -12,7 +12,7 @@ import SwiftUI
 struct NewJournalEntry: View {
     @State private var localEntry: Entry = Entry(entryTitle: "", entryDate: "", entryText: "")
     @State var localDate: String = ""
-    @State var Journalhabit: habit = habit(name: "", done: "", date: "")
+    @State var Journalhabit: habit = habit(name: "", done: "", date: Date())
     @EnvironmentObject var Journaldata: JournalLibrary
     @EnvironmentObject var ProgressTrackingdata: ProgressTrackingClass
     @Environment (\.dismiss) var dismiss
@@ -34,10 +34,10 @@ struct NewJournalEntry: View {
     
     func addJournal() {
         let habitname = "Journal"
-        let habitdate = todaysDate
+        let habitdate = Date()
         let habitdone = "📓"
         Journalhabit.name.append(habitname)
-        Journalhabit.date.append(habitdate)
+        Journalhabit.date = (habitdate)
         Journalhabit.done.append(habitdone)
         ProgressTrackingdata.trackedHabits.append(Journalhabit)
     }
