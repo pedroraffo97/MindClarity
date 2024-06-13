@@ -19,17 +19,53 @@ import FirebaseFirestore
 struct habit: Encodable, Decodable, Hashable, Identifiable {
     var name: String
     var done: String
-    var date: String
+    var date: Date
     var id = UUID()
+    
+        
+    static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+    
+    var dateString: String {
+        habit.dateFormatter.string(from: date)
+    }
+    
+    init(name: String, done: String, date: Date, id: UUID = UUID()) {
+        self.name = name
+        self.done = done
+        self.date = date
+        self.id = id
+    }
+    
+    init(name: String, done: String, dateString: String, id: UUID = UUID()) {
+        self.name = name
+        self.done = done
+        
+        if let parsedDate = habit.dateFormatter.date(from: dateString){
+            self.date = parsedDate
+        } else {
+            print("Error: Invalid date format - \(dateString)")
+            self.date = Date()
+        }
+        
+        self.id = id
+    }
+    
 }
 
-//filemanager
-func getFileManagerProgressTracking() -> URL {
-    let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    return documentsDirectory.appendingPathComponent("habits.json")
+extension Date {
+    func isSameDay(as otherDate: Date) -> Bool {
+        let calendar = Calendar.current
+        return calendar.isDate(self, inSameDayAs: otherDate)
+    }
 }
+
 
 class ProgressTrackingClass: ObservableObject {
+    
     @Published var trackedHabits: [habit] = []
     
     
@@ -50,7 +86,7 @@ class ProgressTrackingClass: ObservableObject {
             "id" :  habit.id.uuidString,
             "name" : habit.name,
             "done" : habit.done,
-            "date" : habit.date
+            "date" : habit.dateString
         
         ]
         //add array to the "habits" connection in Firestore
@@ -76,13 +112,14 @@ class ProgressTrackingClass: ObservableObject {
                 if let snapshot = snapshot {
                     self.trackedHabits = snapshot.documents.compactMap {
                         document in
+                        
                         let data = document.data()
                         let id = UUID(uuidString: data["id"] as? String ?? "") ?? UUID()
                         let name = data["name"] as? String ?? ""
                         let done = data["done"] as? String ?? ""
-                        let date = data["date"] as? String ?? ""
+                        let dateString = data["date"] as? String ?? ""
                         
-                        return habit(name: name, done: done, date: date, id: id)
+                        return habit(name: name, done: done, dateString: dateString, id: id)
                     }
                 }
                 else {
