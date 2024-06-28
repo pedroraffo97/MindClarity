@@ -68,6 +68,19 @@ class ProgressTrackingClass: ObservableObject {
     
     @Published var trackedHabits: [habit] = []
     
+    //to check if the habit already exists for the selectedDate to avoid repetition:
+    func habitExistsForDate(habitName: String, date: Date) -> Bool {
+        return trackedHabits.contains{$0.name == habitName && $0.date.isSameDay(as: date)}
+    }
+    
+    //adds a Habit record to the trackedHabits in the ProgressTrackingView or in each one of the Habits View throughout the app:
+    func addHabit(habitName: String, habitDone: String, date: Date) {
+        if !habitExistsForDate(habitName: habitName, date: date) {
+            let newHabit = habit(name: habitName, done: habitDone, date: date)
+            trackedHabits.append(newHabit)
+        }
+    }
+    
     
     func addHabitstoFirestore(habit: habit) {
         //check authentication
