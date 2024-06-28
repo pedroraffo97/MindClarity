@@ -80,7 +80,7 @@ struct GratitudeJournalView:View {
                     
                     Gratitudedata.GratitudeEntries.append(localGratitudeData)
                     localGratitudeData = GratitudeNote(date: "")
-                    addGratefulNotes()
+                    ProgressTrackingdata.addHabit(habitName: "Grateful Notes", habitDone: "🤲", date: Date())
                 } label: {
                     Text("Add Grateful Session")
                 }
@@ -125,4 +125,3 @@ struct GratitudeJournalView_Preview: PreviewProvider {
         GratitudeJournalView()
     }
 }
- 
