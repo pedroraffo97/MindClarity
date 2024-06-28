@@ -91,7 +91,7 @@ struct NewJournalEntry: View {
                 Group {
                     Button {
                         Journaldata.activeEntry.append(localEntry)
-                        addJournal()
+                        ProgressTrackingdata.addHabit(habitName: "Journal", habitDone: "📓", date: Date())
                         dismiss()
                     } label: {
                         Image(systemName: "plus.circle")
