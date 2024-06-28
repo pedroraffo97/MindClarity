@@ -44,7 +44,7 @@ struct MeditationHubView: View {
                         Text(video.videoDescription)
                         .padding()
                         Button{
-                            addMeditation()
+                            ProgressTrackingdata.addHabit(habitName: "Meditation", habitDone: "🧘‍♂️", date: Date())
                         } label: {
                         Text("add Meditation Session")
                         }
