@@ -19,6 +19,7 @@ struct HabitView: View {
                 HStack{
                     Text(habitUnit.done)
                     Text(habitUnit.name)
+                        .foregroundStyle(Color.white)
                     
                     Button {
                         if let index = ProgressTrackingdata.trackedHabits.firstIndex(where: {$0.id == habitUnit.id}) {
@@ -29,69 +30,25 @@ struct HabitView: View {
                     .foregroundColor(.red)
                 }
         }
-        .padding()
+        .padding(5)
     }
 }
 
 struct ProgressTrackingView: View {
     @EnvironmentObject var ProgressTrackingdata: ProgressTrackingClass
-    @State var REBThabit: habit = habit(name: "", done: "", date: Date())
-    @State var Meditationhabit: habit = habit(name: "", done: "", date: Date())
-    @State var Journalhabit: habit = habit(name: "", done: "", date: Date())
-    @State var Gratefulhabit: habit = habit(name: "", done: "", date: Date())
-    
     @State var selectedHabitDate: Date = {
         let calendar = Calendar.current
         let currentDate = Date()
         let components = calendar.dateComponents([.year, .month, .day], from: currentDate)
         return calendar.date(from: components) ?? currentDate
     }()
-
     
-    func addREBT() {
-        let habitname = "REBT"
-        let habitdate = Date()
-        let habitdone = "📝"
-        REBThabit.name = habitname
-        REBThabit.date = habitdate
-        REBThabit.done = habitdone
-        ProgressTrackingdata.trackedHabits.append(REBThabit)
-        
+    //Turn the selected date into a String
+    var stringdate: String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: selectedHabitDate)
     }
-    
-    func addMeditation() {
-        let habitname = "Meditation"
-        let habitdate = Date()
-        let habitdone = "🧘‍♂️"
-        Meditationhabit.name = habitname
-        Meditationhabit.date = habitdate
-        Meditationhabit.done = habitdone
-        ProgressTrackingdata.trackedHabits.append(Meditationhabit)
-    }
-    
-    func addJournal() {
-        let habitname = "Journal"
-        let habitdate = Date()
-        let habitdone = "📓"
-        Journalhabit.name = habitname
-        Journalhabit.date = habitdate
-        Journalhabit.done = habitdone
-        ProgressTrackingdata.trackedHabits.append(Journalhabit)
-    }
-    
-    func addGratefulNotes() {
-        let habitname = "Grateful Notes"
-        let habitdate = Date()
-        let habitdone = "🤲"
-        Gratefulhabit.name = habitname
-        Journalhabit.date = habitdate
-        Gratefulhabit.done = habitdone
-        ProgressTrackingdata.trackedHabits.append(Gratefulhabit)
-        
-    }
-    
-
-    
     var body: some View {
         VStack{
             Rectangle()
@@ -108,13 +65,23 @@ struct ProgressTrackingView: View {
                 .frame(height: 5)
             ScrollView{
                 VStack{
+                    ZStack {
+                        RoundedRectangle(cornerSize: CGSize(width: 40, height: 50))
+                            .frame(width: 250, height: 230)
+                        VStack{
                         VStack {
-                            ForEach(ProgressTrackingdata.trackedHabits.filter{$0.date.isSameDay(as: selectedHabitDate)}){
-                                index in
-                                HabitView(habitUnit: index)
+                                Text(stringdate)
+                                .foregroundStyle(Color.white)
+                                .font(.title2)
+                                .bold()
+                                ForEach(ProgressTrackingdata.trackedHabits.filter{$0.date.isSameDay(as: selectedHabitDate)}){
+                                    index in
+                                    HabitView(habitUnit: index)
+                                }
                             }
                         }
-                        VStack {
+                    }
+                    VStack {
                             DatePicker("", selection: $selectedHabitDate, displayedComponents: .date)
                                 .datePickerStyle(.graphical)
                         }
@@ -127,7 +94,7 @@ struct ProgressTrackingView: View {
             VStack{
                 HStack {
                     Button {
-                        addREBT()
+                        ProgressTrackingdata.addHabit(habitName: "REBT", habitDone: "📝", date: selectedHabitDate)
                         
                     } label: {
                         Text("REBT")
@@ -139,7 +106,7 @@ struct ProgressTrackingView: View {
                     .padding()
                     
                     Button {
-                        addMeditation()
+                        ProgressTrackingdata.addHabit(habitName: "Meditation", habitDone: "🧘‍♂️", date: selectedHabitDate)
                     } label: {
                         Text("Meditation")
                     }
@@ -151,7 +118,7 @@ struct ProgressTrackingView: View {
                     
                     
                     Button {
-                        addJournal()
+                        ProgressTrackingdata.addHabit(habitName: "Journal", habitDone: "📓", date: selectedHabitDate)
                     } label: {
                         Text("Journal")
                     }
@@ -160,20 +127,19 @@ struct ProgressTrackingView: View {
                     .foregroundColor(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding()
-                }
-                
-                
+                    }
+                    
                     Button {
-                        addGratefulNotes()
+                        ProgressTrackingdata.addHabit(habitName: "Grateful Notes", habitDone: "🤲", date: selectedHabitDate)
                     } label: {
-                    Text("Grateful Notes")
+                        Text("Grateful Notes")
                     }
                     .buttonStyle(.bordered)
                     .background(Color.black)
                     .foregroundColor(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding()
-
+                    
                 }
             }
             Rectangle()
