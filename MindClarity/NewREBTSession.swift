@@ -22,17 +22,6 @@ struct NewREBTSession: View {
         return dateFormatter.string(from: Date())
     }
     
-    func addREBT() {
-        let habitname = "REBT"
-        let habitdate = Date()
-        let habitdone = "📝"
-        REBThabit.name = habitname
-        REBThabit.date = habitdate
-        REBThabit.done = habitdone
-        ProgressTrackingdata.trackedHabits.append(REBThabit)
-        
-    }
-    
     
     var body: some View {
         ScrollView{
@@ -153,7 +142,7 @@ struct NewREBTSession: View {
                 //Save the session
                 Button{
                     REBTdata.activeSessions.append(new_REBT_session)
-                    addREBT()
+                    ProgressTrackingdata.addHabit(habitName: "REBT", habitDone: "📝", date: Date())
                     dismiss()
                     
                 } label: {
@@ -170,4 +159,47 @@ struct NewREBTSession: View {
             .background(chosenWallpaper())
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+struct NewREBTSession_Preview: PreviewProvider {
+    static var previews: some View {
+        NewREBTSession()
+    }
+}
+
 
